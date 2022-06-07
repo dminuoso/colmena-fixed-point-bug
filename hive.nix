@@ -7,25 +7,19 @@
     config.networking.hostName = "bar";
     config.deployment.tags = ["fun"];
   };
-  "quux" = { lib, config, ... }: {
-    users.motd = lib.concatStringsSep "\n" (lib.mapAttrsToList (_name: host:
-      host.config.networking.hostName
-    ) (config.utils.nodesWithTag "fun"));
+  "quux" = { config, lib, ... }: with lib; {
+    users.motd = concatStringsSep "\n" (
+      mapAttrsToList (_n: h: h.config.networking.hostName) config.utils.allNodes
+    );
   };
   
   "defaults" = { name, lib, nodes, ... }:
-    let
-        utils = rec {
-            nodesWithTag = tag: lib.filterAttrs (_name: host:
-            builtins.elem tag host.config.deployment.tags
-            ) nodes;
-        };
-    in {
-        options.utils.nodesWithTag = lib.mkOption {
-            type = with lib.types; anything;
+    {
+        options.utils.allNodes = lib.mkOption {
+            type = lib.types.anything;
             description = "Return all nodes that match the specified role";
             readOnly = true;
-            default = utils.nodesWithTag;
+            default = nodes;
         };
         config = {
             boot.loader.grub.devices = ["/dev/sda"];
