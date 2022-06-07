@@ -1,16 +1,9 @@
 { 
   "foo" = { ... }: {
     config.networking.hostName = "foo";
-    config.deployment.tags = ["fun"];
-  };
-  "bar" = { ... }: {
-    config.networking.hostName = "bar";
-    config.deployment.tags = ["fun"];
   };
   "quux" = { config, lib, ... }: with lib; {
-    users.motd = concatStringsSep "\n" (
-      mapAttrsToList (_n: h: h.config.networking.hostName) config.utils.allNodes
-    );
+    users.motd = config.utils.allNodes.foo.config.networking.hostName;
   };
   
   "defaults" = { name, lib, nodes, ... }:
