@@ -10,7 +10,6 @@
     {
         options.utils.allNodes = lib.mkOption {
             type = lib.types.anything;
-            description = "Return all nodes that match the specified role";
             readOnly = true;
             default = nodes;
         };
